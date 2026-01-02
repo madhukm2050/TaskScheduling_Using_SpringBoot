@@ -3,6 +3,8 @@
 A Spring Boot–based scheduled email reminder system that automatically sends emails at scheduled times.
 The application is designed to work safely even in distributed environments using database-based locking and maintains logs using Log4j2 rolling files.
 
+
+
 📖 Project Overview
 
 This project demonstrates how to:
@@ -17,6 +19,7 @@ Persist and track reminder status in a database
 
 Store application logs safely in rolling log files
 
+
 🏗️ Architecture
 Spring Scheduler (@Scheduled)
         |
@@ -29,6 +32,8 @@ MySQL Database
         |
         v
 Email Service (JavaMailSender - SMTP)
+
+
 
 ✅ Features Implemented
 
@@ -58,6 +63,7 @@ Uses Log4j2
 
 Logs are written to files with 1 GB rolling policy
 
+
 🧰 Tech Stack
 Layer	Technology
 Language	Java 17
@@ -83,6 +89,7 @@ Reminder is marked as sent
 
 Logs are written to file and console
 
+
 🗄️ Database Setup
 Create Database
 CREATE DATABASE taskscheduling;
@@ -104,6 +111,8 @@ CREATE TABLE shedlock (
   locked_at TIMESTAMP,
   locked_by VARCHAR(255)
 );
+
+
 
 ✉️ Email Configuration
 
@@ -127,6 +136,8 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 
 
 ⚠️ Gmail requires App Passwords, not normal passwords.
+
+
 
 📝 Logging
 
@@ -157,6 +168,9 @@ Database tables are created
 
 Gmail App Password is configured
 
+
+
+
 ⚠️ Current Limitations
 
 No REST API to create reminders
@@ -164,6 +178,8 @@ No REST API to create reminders
 Reminders must be inserted directly into the database
 
 No retry mechanism for failed emails
+
+
 
 🚀 Future Enhancements
 
