@@ -1,26 +1,23 @@
-⏰ Task Scheduling Using Spring Boot
+# ⏰ Task Scheduling Using Spring Boot
 
-A Spring Boot–based scheduled email reminder system that automatically sends emails at scheduled times.
-The application is designed to work safely even in distributed environments using database-based locking and maintains logs using Log4j2 rolling files.
+A **Spring Boot–based scheduled email reminder system** that automatically sends emails at scheduled times.  
+The application is designed to work safely in **distributed environments** using **database-based locking (ShedLock)** and stores logs using **Log4j2 rolling files**.
 
+---
 
-
-📖 Project Overview
+## 📖 Project Overview
 
 This project demonstrates how to:
+- Schedule background jobs using Spring Boot
+- Prevent duplicate execution in multi-instance deployments
+- Send automated email reminders
+- Persist and track reminder status in a database
+- Store application logs safely in rolling log files
 
-Schedule background jobs using Spring Boot
+---
 
-Prevent duplicate execution in multi-instance deployments
+## 🏗️ Architecture
 
-Send automated email reminders
-
-Persist and track reminder status in a database
-
-Store application logs safely in rolling log files
-
-
-🏗️ Architecture
 Spring Scheduler (@Scheduled)
         |
         v
@@ -35,67 +32,66 @@ Email Service (JavaMailSender - SMTP)
 
 
 
-✅ Features Implemented
+---
 
-Task Scheduling
+## ✅ Features Implemented
 
-Fixed-rate and fixed-delay scheduling using @Scheduled
+### ⏰ Task Scheduling
+- Fixed-rate and fixed-delay scheduling using `@Scheduled`
 
-Email Reminder System
+### 📧 Email Reminder System
+- Automatically sends emails when the scheduled time is reached
 
-Automatically sends emails when scheduled time is reached
+### 🛑 Distributed Locking
+- Uses **ShedLock** with MySQL
+- Ensures only one instance executes the scheduled task
 
-Distributed Locking
+### 🗄️ Database Persistence
+- Stores reminders and their sent status (`is_sent`)
+- Uses Spring Data JPA (Hibernate)
 
-Uses ShedLock with MySQL
+### 📝 Logging
+- Uses **Log4j2**
+- Logs are written to files with a **1 GB rolling policy**
 
-Ensures only one instance executes the scheduled task
+---
 
-Database Persistence
+## 🧰 Tech Stack
 
-Stores reminders and their sent status (is_sent)
+| Layer       | Technology |
+|------------|------------|
+| Language   | Java 17 |
+| Framework  | Spring Boot |
+| Scheduling | Spring Scheduler (`@Scheduled`) |
+| ORM        | Spring Data JPA (Hibernate) |
+| Database   | MySQL |
+| Email      | JavaMailSender (SMTP) |
+| Locking    | ShedLock |
+| Logging    | Log4j2 (Rolling File) |
+| Build Tool | Maven |
 
-Uses Spring Data JPA (Hibernate)
+---
 
-Logging
+## ⚙️ How the System Works
 
-Uses Log4j2
+1. Scheduler runs at a configured interval  
+2. ShedLock acquires a database lock  
+3. Database is queried for pending reminders  
+4. Email is sent for due reminders  
+5. Reminder is marked as sent  
+6. Logs are written to file and console  
 
-Logs are written to files with 1 GB rolling policy
+---
 
+## 🗄️ Database Setup
 
-🧰 Tech Stack
-Layer	Technology
-Language	Java 17
-Framework	Spring Boot
-Scheduling	Spring Scheduler (@Scheduled)
-ORM	Spring Data JPA (Hibernate)
-Database	MySQL
-Email	JavaMailSender (SMTP)
-Locking	ShedLock
-Logging	Log4j2 (Rolling File)
-Build Tool	Maven
-⚙️ How the System Works
-
-Scheduler runs at a configured interval
-
-ShedLock acquires a database lock
-
-Database is queried for pending reminders
-
-Email is sent for due reminders
-
-Reminder is marked as sent
-
-Logs are written to file and console
-
-
-🗄️ Database Setup
-Create Database
+### Create Database
+```sql
 CREATE DATABASE taskscheduling;
 USE taskscheduling;
+```
+---
 
-Create reminders Table
 CREATE TABLE reminders (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   email VARCHAR(255),
@@ -104,7 +100,7 @@ CREATE TABLE reminders (
   is_sent BOOLEAN DEFAULT FALSE
 );
 
-Create shedlock Table
+
 CREATE TABLE shedlock (
   name VARCHAR(64) PRIMARY KEY,
   lock_until TIMESTAMP,
@@ -112,8 +108,7 @@ CREATE TABLE shedlock (
   locked_by VARCHAR(255)
 );
 
-
-
+---
 ✉️ Email Configuration
 
 This project uses Gmail SMTP with App Password.
@@ -135,9 +130,7 @@ spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 
 
-⚠️ Gmail requires App Passwords, not normal passwords.
-
-
+---
 
 📝 Logging
 
@@ -150,11 +143,14 @@ logs/application.log
 
 When the file size reaches 1 GB, a new log file is created automatically
 
-Example log output:
+Example:
 
 INFO  RemainderService - Scheduler triggered
 INFO  RemainderService - Sending reminder email
 ERROR EmailService - Authentication failed
+
+
+---
 
 ▶️ How to Run the Project
 mvn clean spring-boot:run
@@ -168,8 +164,7 @@ Database tables are created
 
 Gmail App Password is configured
 
-
-
+---
 
 ⚠️ Current Limitations
 
@@ -179,7 +174,7 @@ Reminders must be inserted directly into the database
 
 No retry mechanism for failed emails
 
-
+---
 
 🚀 Future Enhancements
 
@@ -192,3 +187,4 @@ Add input validation
 Dockerize the application
 
 Add monitoring and metrics
+
