@@ -1,107 +1,94 @@
-🕒 Scheduled Email Reminder System (Spring Boot)
+⏰ Task Scheduling Using Spring Boot
 
 A Spring Boot–based scheduled email reminder system that automatically sends emails at scheduled times.
-The application is safe for distributed environments, uses database-backed locking (ShedLock) to avoid duplicate execution, and logs execution details using Log4j2 with rolling file support.
+The application is designed to work safely even in distributed environments using database-based locking and maintains logs using Log4j2 rolling files.
 
-📌 Architecture Overview
-┌──────────────────────────┐
-│ Spring Scheduler         │
-│ (@Scheduled Tasks)       │
-└───────────┬──────────────┘
-            │
-            ▼
-┌──────────────────────────┐
-│ RemainderService         │
-│ - Fetch due reminders    │
-│ - Send emails            │
-│ - Update sent status     │
-│ - ShedLock protection    │
-└───────────┬──────────────┘
-            │
-            ▼
-┌──────────────────────────┐
-│ MySQL Database           │
-│ - reminders table        │
-│ - shedlock table         │
-└───────────┬──────────────┘
-            │
-            ▼
-┌──────────────────────────┐
-│ Email Service (SMTP)     │
-│ JavaMailSender           │
-└──────────────────────────┘
+📖 Project Overview
 
-✨ Features Implemented
+This project demonstrates how to:
 
-⏰ Task Scheduling
+Schedule background jobs using Spring Boot
 
-Uses Spring’s @Scheduled annotation
+Prevent duplicate execution in multi-instance deployments
 
-Supports fixed-rate and fixed-delay execution
+Send automated email reminders
 
-📧 Automated Email Reminders
+Persist and track reminder status in a database
 
-Sends emails when scheduled_time <= current time
+Store application logs safely in rolling log files
 
-Uses JavaMailSender (SMTP)
+🏗️ Architecture
+Spring Scheduler (@Scheduled)
+        |
+        v
+RemainderService (Business Logic + ShedLock)
+        |
+        v
+MySQL Database
+(reminders, shedlock tables)
+        |
+        v
+Email Service (JavaMailSender - SMTP)
 
-🛑 Distributed Scheduler Lock
+✅ Features Implemented
+
+Task Scheduling
+
+Fixed-rate and fixed-delay scheduling using @Scheduled
+
+Email Reminder System
+
+Automatically sends emails when scheduled time is reached
+
+Distributed Locking
 
 Uses ShedLock with MySQL
 
-Prevents duplicate email sending in multi-instance deployments
+Ensures only one instance executes the scheduled task
 
-🗄️ Database Persistence
+Database Persistence
 
-Stores reminders and execution status (is_sent)
+Stores reminders and their sent status (is_sent)
 
-Uses Spring Data JPA with Hibernate
+Uses Spring Data JPA (Hibernate)
 
-📜 Centralized Logging
+Logging
 
 Uses Log4j2
 
-Logs written to file with 1 GB rolling policy
+Logs are written to files with 1 GB rolling policy
 
-❌ No REST API
-
-Reminders are currently inserted directly into the database
-
-🛠️ Tech Stack
-Category	Technology
+🧰 Tech Stack
+Layer	Technology
 Language	Java 17
 Framework	Spring Boot
-Scheduling	Spring @Scheduled
+Scheduling	Spring Scheduler (@Scheduled)
 ORM	Spring Data JPA (Hibernate)
 Database	MySQL
 Email	JavaMailSender (SMTP)
-Distributed Lock	ShedLock
-Logging	Log4j2 (Rolling File – 1GB)
+Locking	ShedLock
+Logging	Log4j2 (Rolling File)
 Build Tool	Maven
-🚀 How the System Works
+⚙️ How the System Works
 
-Scheduler runs at a fixed interval (every few seconds)
+Scheduler runs at a configured interval
 
-Acquires a ShedLock to ensure single execution
+ShedLock acquires a database lock
 
-Fetches reminders where:
+Database is queried for pending reminders
 
-scheduled_time <= NOW()
+Email is sent for due reminders
 
-is_sent = false
+Reminder is marked as sent
 
-Sends email using SMTP
-
-Marks reminder as sent (is_sent = true)
-
-Logs all steps to console and file
+Logs are written to file and console
 
 🗄️ Database Setup
 Create Database
 CREATE DATABASE taskscheduling;
 USE taskscheduling;
 
-Create reminders table
+Create reminders Table
 CREATE TABLE reminders (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   email VARCHAR(255),
@@ -110,7 +97,7 @@ CREATE TABLE reminders (
   is_sent BOOLEAN DEFAULT FALSE
 );
 
-Create shedlock table
+Create shedlock Table
 CREATE TABLE shedlock (
   name VARCHAR(64) PRIMARY KEY,
   lock_until TIMESTAMP,
@@ -122,7 +109,8 @@ CREATE TABLE shedlock (
 
 This project uses Gmail SMTP with App Password.
 
-application.properties
+Add the following to application.properties:
+
 spring.datasource.url=jdbc:mysql://localhost:3306/taskscheduling
 spring.datasource.username=root
 spring.datasource.password=YOUR_DB_PASSWORD
@@ -138,56 +126,53 @@ spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 
 
-⚠️ Gmail requires App Passwords (normal passwords will fail).
+⚠️ Gmail requires App Passwords, not normal passwords.
 
-📜 Logging Configuration
+📝 Logging
 
 Logging is implemented using Log4j2
 
-Logs are written to:
+Logs are stored in:
 
 logs/application.log
 
 
-When the file reaches 1 GB, it rolls automatically:
-
-application-1.log
-application-2.log
-
+When the file size reaches 1 GB, a new log file is created automatically
 
 Example log output:
 
-INFO  RemainderService - Scheduler triggered for sending reminders
-INFO  RemainderService - Number of reminders found: 1
-INFO  RemainderService - Sending reminder email to user@gmail.com
+INFO  RemainderService - Scheduler triggered
+INFO  RemainderService - Sending reminder email
 ERROR EmailService - Authentication failed
 
-▶️ How to Run
+▶️ How to Run the Project
 mvn clean spring-boot:run
 
 
 Make sure:
 
-MySQL is running
+MySQL server is running
+
+Database tables are created
 
 Gmail App Password is configured
 
-📌 Current Limitations
+⚠️ Current Limitations
 
 No REST API to create reminders
 
 Reminders must be inserted directly into the database
 
-No retry count for failed emails
+No retry mechanism for failed emails
 
-🔮 Future Improvements
+🚀 Future Enhancements
 
-Add REST API to create reminders
+Add REST API for creating reminders
 
-Add retry mechanism for failed emails
+Add retry logic for email failures
 
-Add validation and error handling
+Add input validation
 
 Dockerize the application
 
-Add metrics and monitoring
+Add monitoring and metrics
